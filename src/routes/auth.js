@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const db = require('../db/database');
 const router = express.Router();
 
-// Register
 router.post('/register', async (req, res) => {
   try {
     const { email, password, fullName } = req.body;
@@ -27,7 +26,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -55,7 +53,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Logout
 router.post('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) return res.status(500).json({ error: 'Logout failed' });
@@ -63,7 +60,6 @@ router.post('/logout', (req, res) => {
   });
 });
 
-// Get current user
 router.get('/me', (req, res) => {
   if (!req.session.userId) {
     return res.status(401).json({ error: 'Not authenticated' });

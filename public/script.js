@@ -1,4 +1,3 @@
-// Form toggle
 function toggleForms() {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
@@ -6,12 +5,10 @@ function toggleForms() {
     loginForm.classList.toggle('active');
     registerForm.classList.toggle('active');
     
-    // Clear error messages
     document.getElementById('login-error').textContent = '';
     document.getElementById('register-error').textContent = '';
 }
 
-// Login handler
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -42,7 +39,6 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     }
 });
 
-// Register handler
 document.getElementById('register-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -85,7 +81,6 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     }
 });
 
-// Show dashboard
 function showDashboard(user) {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
@@ -99,7 +94,6 @@ function showDashboard(user) {
     document.getElementById('user-email').textContent = user.email;
 }
 
-// Logout handler
 function logout() {
     fetch('/api/auth/logout', {
         method: 'POST'
@@ -108,7 +102,6 @@ function logout() {
     });
 }
 
-// Check if user is already logged in
 window.addEventListener('load', async () => {
     try {
         const response = await fetch('/api/auth/me');
