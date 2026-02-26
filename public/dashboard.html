@@ -1,7 +1,168 @@
 <html>
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>lifeOS</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: white;
+  }
+  .navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .navbar h1 {
+    margin: 0;
+  }
+  .logout-btn {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .logout-btn:hover {
+    background: #f0f0f0;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 20px;
+  }
+  .tab-btn {
+    background: white;
+    border: 2px solid #ddd;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s;
+  }
+  .tab-btn:hover {
+    border-color: #667eea;
+    color: #667eea;
+  }
+  .tab-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+  }
+  .tab-content {
+    display: none;
+    animation: fadeIn 0.3s;
+  }
+  .tab-content.active {
+    display: block;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .tab-content h2 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+</style>
 </head>
 <body>
+  <div class="navbar">
+    <h1>lifeOS</h1>
+    <button class="logout-btn" onclick="logout()">Wyloguj się</button>
+  </div>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('calendar')">📅 Kalendarz</button>
+      <button class="tab-btn" onclick="switchTab('yearly-goals')">🎯 Cele roczne</button>
+      <button class="tab-btn" onclick="switchTab('journal')">📔 Dziennik</button>
+      <button class="tab-btn" onclick="switchTab('expense-tracker')">💰 Tracker wydatków</button>
+      <button class="tab-btn" onclick="switchTab('financial-goals')">💸 Cele finansowe</button>
+      <button class="tab-btn" onclick="switchTab('books')">📚 Książki do przeczytania</button>
+      <button class="tab-btn" onclick="switchTab('reminders')">🔔 Przypomnienia</button>
+    </div>
+
+    <div id="calendar" class="tab-content active">
+      <h2>📅 Kalendarz</h2>
+    </div>
+
+    <div id="yearly-goals" class="tab-content">
+      <h2>🎯 Cele roczne</h2>
+    </div>
+
+    <div id="journal" class="tab-content">
+      <h2>📔 Dziennik</h2>
+    </div>
+
+    <div id="expense-tracker" class="tab-content">
+      <h2>💰 Tracker wydatków</h2>
+    </div>
+
+    <div id="financial-goals" class="tab-content">
+      <h2>💸 Cele finansowe</h2>
+    </div>
+
+    <div id="books" class="tab-content">
+      <h2>📚 Książki do przeczytania</h2>
+    </div>
+
+    <div id="reminders" class="tab-content">
+      <h2>🔔 Przypomnienia o ważnych datach</h2>
+    </div>
+  </div>
+
+  <script>
+    async function checkAuth() {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (!response.ok) {
+          window.location.href = '/';
+        }
+      } catch (error) {
+        window.location.href = '/';
+      }
+    }
+
+    function switchTab(tabId) {
+      const contents = document.querySelectorAll('.tab-content');
+      const buttons = document.querySelectorAll('.tab-btn');
+      
+      contents.forEach(content => content.classList.remove('active'));
+      buttons.forEach(btn => btn.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function logout() {
+      fetch('/api/auth/logout', {
+        method: 'POST'
+      }).then(() => {
+        window.location.href = '/';
+      });
+    }
+
+    window.addEventListener('load', checkAuth);
+  </script>
 </body>
 </html>
