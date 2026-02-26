@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lifeOS - Logowanie</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>lifeOS</h1>
+            <p>System zarządzania Twoim życiem</p>
+        </div>
+
+        <div class="auth-container">
+            <!-- Login Form -->
+            <div id="loginForm" class="form-section active">
+                <h2>Logowanie</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Hasło</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Zaloguj się</button>
+                </form>
+                <p class="form-switch">
+                    Nie masz konta? <a href="#" onclick="toggleForms()">Zarejestruj się</a>
+                </p>
+                <div id="login-error" class="error-message"></div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="form-section">
+                <h2>Rejestracja</h2>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="register-name">Pełne imię</label>
+                        <input type="text" id="register-name" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Hasło</label>
+                        <input type="password" id="register-password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password-confirm">Potwierdź hasło</label>
+                        <input type="password" id="register-password-confirm" name="passwordConfirm" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Zarejestruj się</button>
+                </form>
+                <p class="form-switch">
+                    Masz już konto? <a href="#" onclick="toggleForms()">Zaloguj się</a>
+                </p>
+                <div id="register-error" class="error-message"></div>
+            </div>
+
+            <!-- Dashboard (shown after login) -->
+            <div id="dashboard" class="form-section">
+                <div class="dashboard-header">
+                    <h2>Witaj, <span id="user-name"></span>!</h2>
+                    <button class="btn btn-secondary" onclick="logout()">Wyloguj się</button>
+                </div>
+                <div class="dashboard-content">
+                    <p>Jesteś zalogowany do systemu lifeOS.</p>
+                    <p>Email: <strong id="user-email"></strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
