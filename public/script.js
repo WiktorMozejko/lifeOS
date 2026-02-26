@@ -31,7 +31,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         const data = await response.json();
         
         if (response.ok) {
-            showDashboard(data.user);
+            window.location.href = '/dashboard.html';
         } else {
             errorDiv.textContent = data.error || 'Błąd logowania';
             errorDiv.classList.add('show');
