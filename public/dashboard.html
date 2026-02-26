@@ -4,56 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - lifeOS</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: white;
+            height: 100vh;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="dashboard-page">
-            <nav class="navbar">
-                <div class="navbar-brand">
-                    <h1>lifeOS</h1>
-                </div>
-                <div class="navbar-menu">
-                    <span id="user-greeting">Witaj!</span>
-                    <button class="btn btn-secondary" onclick="logout()">Wyloguj się</button>
-                </div>
-            </nav>
-
-            <div class="dashboard-main">
-            </div>
-        </div>
-    </div>
-
     <script>
         // Check if user is logged in
         async function checkAuth() {
             try {
                 const response = await fetch('/api/auth/me');
-                if (response.ok) {
-                    const data = await response.json();
-                    const username = data.user.email.split('@')[0];
-                    document.getElementById('dash-user-name').textContent = username;
-                    document.getElementById('dash-user-email').textContent = data.user.email;
-                    document.getElementById('user-greeting').textContent = `Cześć, ${username}!`;
-                } else {
+                if (!response.ok) {
                     window.location.href = '/';
                 }
             } catch (error) {
-                console.error('Error:', error);
                 window.location.href = '/';
             }
         }
-
-        // Logout handler
-        function logout() {
-            fetch('/api/auth/logout', {
-                method: 'POST'
-            }).then(() => {
-                window.location.href = '/';
-            });
-        }
-
-        // Load on page load
+        
         window.addEventListener('load', checkAuth);
     </script>
 </body>
