@@ -42,13 +42,18 @@
     margin: 0 auto;
     padding: 20px;
   }
+  .tabs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 20px;
+  }
   .tabs {
     display: flex;
     gap: 10px;
-    margin-bottom: 30px;
     flex-wrap: wrap;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 20px;
   }
   .tab-btn {
     background: white;
@@ -58,6 +63,7 @@
     cursor: pointer;
     font-weight: 500;
     transition: all 0.3s;
+    position: relative;
   }
   .tab-btn:hover {
     border-color: #667eea;
@@ -67,6 +73,81 @@
     background: #667eea;
     color: white;
     border-color: #667eea;
+  }
+  .tab-btn .close-tab {
+    margin-left: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .add-tab-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.3s;
+  }
+  .add-tab-btn:hover {
+    background: #764ba2;
+  }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  .modal-content h2 {
+    margin-bottom: 20px;
+    color: #333;
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .close:hover {
+    color: #000;
+  }
+  .modal-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .modal-btn {
+    background: white;
+    border: 2px solid #667eea;
+    color: #667eea;
+    padding: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s;
+  }
+  .modal-btn:hover {
+    background: #667eea;
+    color: white;
   }
   .tab-content {
     display: none;
@@ -92,14 +173,9 @@
   </div>
 
   <div class="container">
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('calendar')">📅 Kalendarz</button>
-      <button class="tab-btn" onclick="switchTab('yearly-goals')">🎯 Cele roczne</button>
-      <button class="tab-btn" onclick="switchTab('journal')">📔 Dziennik</button>
-      <button class="tab-btn" onclick="switchTab('expense-tracker')">💰 Tracker wydatków</button>
-      <button class="tab-btn" onclick="switchTab('financial-goals')">💸 Cele finansowe</button>
-      <button class="tab-btn" onclick="switchTab('books')">📚 Książki do przeczytania</button>
-      <button class="tab-btn" onclick="switchTab('reminders')">🔔 Przypomnienia</button>
+    <div class="tabs-header">
+      <div class="tabs" id="tabs-container"></div>
+      <button class="add-tab-btn" onclick="openAddTabModal()">+ Dodaj zakładkę</button>
     </div>
 
     <div id="calendar" class="tab-content active">
@@ -131,7 +207,35 @@
     </div>
   </div>
 
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeAddTabModal()">&times;</span>
+      <h2>Dodaj nową zakładkę</h2>
+      <div class="modal-options">
+        <button class="modal-btn" onclick="addTab('calendar', '📅 Kalendarz')">📅 Kalendarz</button>
+        <button class="modal-btn" onclick="addTab('yearly-goals', '🎯 Cele roczne')">🎯 Cele roczne</button>
+        <button class="modal-btn" onclick="addTab('journal', '📔 Dziennik')">📔 Dziennik</button>
+        <button class="modal-btn" onclick="addTab('expense-tracker', '💰 Tracker wydatków')">💰 Tracker wydatków</button>
+        <button class="modal-btn" onclick="addTab('financial-goals', '💸 Cele finansowe')">💸 Cele finansowe</button>
+        <button class="modal-btn" onclick="addTab('books', '📚 Książki do przeczytania')">📚 Książki do przeczytania</button>
+        <button class="modal-btn" onclick="addTab('reminders', '🔔 Przypomnienia')">🔔 Przypomnienia</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    const availableTabs = {
+      'calendar': '📅 Kalendarz',
+      'yearly-goals': '🎯 Cele roczne',
+      'journal': '📔 Dziennik',
+      'expense-tracker': '💰 Tracker wydatków',
+      'financial-goals': '💸 Cele finansowe',
+      'books': '📚 Książki do przeczytania',
+      'reminders': '🔔 Przypomnienia'
+    };
+
+    let userTabs = JSON.parse(localStorage.getItem('userTabs')) || [];
+
     async function checkAuth() {
       try {
         const response = await fetch('/api/auth/me');
@@ -143,6 +247,40 @@
       }
     }
 
+    function renderTabs() {
+      const container = document.getElementById('tabs-container');
+      container.innerHTML = '';
+      
+      userTabs.forEach((tabId, index) => {
+        const tabLabel = availableTabs[tabId];
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn' + (index === 0 ? ' active' : '');
+        btn.innerHTML = `${tabLabel} <span class="close-tab" onclick="removeTab('${tabId}', event)">×</span>`;
+        btn.onclick = () => switchTab(tabId);
+        container.appendChild(btn);
+      });
+    }
+
+    function addTab(tabId, label) {
+      if (!userTabs.includes(tabId)) {
+        userTabs.push(tabId);
+        localStorage.setItem('userTabs', JSON.stringify(userTabs));
+        renderTabs();
+      }
+      closeAddTabModal();
+    }
+
+    function removeTab(tabId, event) {
+      event.stopPropagation();
+      userTabs = userTabs.filter(id => id !== tabId);
+      localStorage.setItem('userTabs', JSON.stringify(userTabs));
+      renderTabs();
+      
+      if (userTabs.length > 0) {
+        switchTab(userTabs[0]);
+      }
+    }
+
     function switchTab(tabId) {
       const contents = document.querySelectorAll('.tab-content');
       const buttons = document.querySelectorAll('.tab-btn');
@@ -150,8 +288,23 @@
       contents.forEach(content => content.classList.remove('active'));
       buttons.forEach(btn => btn.classList.remove('active'));
       
-      document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
+      const content = document.getElementById(tabId);
+      if (content) {
+        content.classList.add('active');
+      }
+      
+      const activeBtn = Array.from(buttons).find(btn => btn.textContent.includes(availableTabs[tabId]));
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+      }
+    }
+
+    function openAddTabModal() {
+      document.getElementById('modal').classList.add('show');
+    }
+
+    function closeAddTabModal() {
+      document.getElementById('modal').classList.remove('show');
     }
 
     function logout() {
@@ -162,7 +315,17 @@
       });
     }
 
-    window.addEventListener('load', checkAuth);
+    window.addEventListener('load', () => {
+      checkAuth();
+      renderTabs();
+    });
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('modal');
+      if (event.target === modal) {
+        closeAddTabModal();
+      }
+    }
   </script>
 </body>
 </html>
